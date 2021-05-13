@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="./assets/amsify/amsify.suggestags.css">
+        <link rel="stylesheet" type="text/css" href="./assets/fancytree/skin-vista/ui.fancytree.css">
+
+        <script type="text/javascript" src="./config.js"></script>
+
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+        <script type="text/javascript" src="./assets/amsify/jquery.amsify.suggestags.js"></script>
+        <script type="text/javascript" src="./assets/fancytree/jquery.fancytree-all.min.js"></script>
+        <script type="text/javascript" src="./assets/chart/Chart.min.js"></script>
+        <script type="text/javascript" src="./assets/chart/chartjs-plugin-datalabels.min.js"></script>
+        <script type="text/javascript" src="./assets/chart/utils.js"></script>
+        <script type="text/javascript" src="./assets/sorttable.js"></script>
+        <script type="text/javascript" src="./assets/moment.js"></script>
+
+
+        <script>
+            $( function() {
+                window.document.getElementById('titleDiv').innerHTML = `GitHub Metrics ${version}`;
+
+                $( "#tabs" ).tabs();
+                $( "#dataTabs" ).tabs({disabled:true});
+                $( "#personalTokenInput")[0].value = localStorage.getItem("personalToken");
+                $( "#searchInput")[0].value = localStorage.getItem("topics");
+                $( "#orgRepoInput")[0].value = localStorage.getItem("orgRepo");
+                $(`input[value=${localStorage.getItem("orgRepoRadio")}]`).prop('checked', true);
+
+                $( 'input[name="searchInput"]').amsifySuggestags({
+                    type : 'amsify'
+                });
+
+                $( "#progressbar" ).progressbar({
+                    value: 0
+                });
+
+                $( "input:radio" ).checkboxradio();
+            } );
+        </script>
+        <link rel="stylesheet" href="./assets/dashboard.css">
+        <script type="text/javascript" language="javascript" src="./assets/dashboard.js"></script> 
+        <style>
+            canvas {
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+            }
+        </style>
+    </head>
+    <body onload="initSaveFunctionality()">
+
+        <form>
+            <div id="titleDiv" class="title"></div>
+            <div id="tabs" style="display: block;">
+                <ul>
+                  <li><a href="#loadAllDiv">Load all Repo</a></li>
+                  <li><a href="#loadLocalDiv">Load local data</a></li>
+                </ul>
+
+                <div id="loadAllDiv" style="display: block;">
+                    <table >
+                        <tr>
+                            <td >To load repositories you must specify a personal token</td>
+                            <td><input id="personalTokenInput" size="50" type="text" value=""/></td>
+                            <td><input id="saveSettingsBtn" type="button" value="Save settings" /></td>
+                        </tr>
+                        <tr>
+                            <td >Load data by organization or by repo<br>
+                                select by organization or repo and then specify the name</td>
+                            <td>
+                                <fieldset>
+                                    <legend>Select by Organization or Repo: </legend>
+                                    <label for="radio-1">Organization</label>
+                                    <input type="radio" name="radio-1" id="radio-1" value= "org" checked>
+                                    <label for="radio-2">Repo</label>
+                                    <input type="radio" name="radio-1" id="radio-2" value= "repo" >
+                                    <br><label for="orgRepoInput">name</label>
+                                    <input type="text" name="orgRepoInput" id="orgRepoInput" size="70" value='[your organization]'>
+                                  </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >Load repositories information<br>
+                                you can add several topics to filter (topic:xxx) press enter to add</td>
+                            <td><input id="searchInput" name="searchInput" size="40" type="text" value=""/></td>
+                            <td><input id="loadFromGithubBtn" type="button" value="Load Data" /></td>
+                        </tr>
+                        <tr>
+                            <td>Save current data in a local file</td>
+                            <td colspan="2"><input id="saveBtn" type="button" value="Save current execution" /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="loadLocalDiv" style="display: none;">
+                    <table ><tr>
+                        <td colspan="2">Load data by choosing a local file</td>
+                        <td><input id="fileSelectorBtn" type="file" /></td>
+                    </tr></table>
+                </div>
+            </div>
+        </form>
+        <br/>
+        <div id="progressbar-container" style="text-align: center; display: none;">
+            Loading repository information... <input id="cancelLoadingBtn" type="button" value="cancel" />
+            <div id="progressbar" ></div>
+        </div>
+        <br/>
+        <div id="dataTabs">
+            <ul>
+              <li id="ladingTab"><a href="#loadingDiv">Loading Data</a></li>
+              <li id="repoListTab" ><a href="#repoDiv-container">Repository List</a></li>
+              <li id="repoExplorerTab" style="display:none"><a href="#explorerDiv-container">Repository Explorers</a></li>
+              <li id="repoHistoryTab" style="display:none"><a href="#historyDiv">Repository History</a></li>
+              <li id="issuesStatusTab" style="display:none"><a href="#issuesDiv-container">Issues Status</a></li>
+              <li id="projectsTab" style="display:none"><a href="#projectsDiv-container">Projects</a></li>
+              <li id="topUserTab" style="display:none"><a href="#topUserDiv">Top User</a></li>
+              <li id="newForWeekTab" style="display:none"><a href="#newPerWeekDiv-container">New PR per Week</a></li>
+              <li id="newIssuesForWeekTab" style="display:none"><a href="#newIssuesPerWeekDiv-container">New Issues per Week</a></li>
+              <li id="newClonesForWeekTab" style="display:none"><a href="#newClonesPerWeekDiv-container">New Clones per Week</a></li>
+              <li id="newForksForWeekTab" style="display:none"><a href="#newForksPerWeekDiv-container">New Forks per Week</a></li>
+            </ul>
+
+            <div id="loadingDiv" style="display: block;">Please click on 'Load Data' to load information from github personal token is mandatory<br>or<br>Click on 'Choose file', on Load local data tab, to load saved data</div>
+
+            <div id="repoDiv-container" style="display: none;">
+                Repository filter <input id="repoListFilterInput" name="repoListFilterInput" size="60" type="text" value=""/><br>
+                <div id="repoDiv" ></div>
+            </div>
+
+            <div id="explorerDiv-container" style="display: none;">
+                <p>
+                    <label>Filter:</label>
+                    <input name="repoExplorerSearch" placeholder="Filter..." autocomplete="off">
+                    <button id="repoExplorerSearchBtn">&times;</button>
+                    <span id="repoExplorerSearchMatches"></span>
+                </p>
+                <div id="explorerDiv" ></div>
+            </div>
+
+            <div id="historyDiv" style="display: none;"></div>
+
+            <div id="issuesDiv-container" style="display: none;">
+                <p>
+                    <button onclick="exportTableToCSV('table#issuesDivTable tr', 'issues.csv')">Export To CSV File</button>
+                </p>
+                <div id="issuesDiv"></div>
+            </div>
+
+            <div id="projectsDiv-container" style="display: none;">
+                <p>
+                    <button onclick="exportTableToCSV('table#projectsDivTable tr', 'projects.csv')">Export To CSV File</button>
+                </p>
+                <div id="projectsDiv"></div>
+            </div>
+
+            <div id="topUserDiv" style="display: none;"></div>
+
+            <div id="newPerWeekDiv-container" style="display: none;">
+                <div id="newPerWeekDivCanvasContainer" style="width: 80%;">
+                </div>
+                <div id="newPerWeekDiv" ></div>
+            </div>
+            <div id="newIssuesPerWeekDiv-container" style="display: none;">
+                <div id="newIssuesPerWeekDivCanvasContainer" style="width: 80%;">
+                </div>
+                <div id="newIssuesPerWeekDiv" ></div>
+            </div>
+            <div id="newClonesPerWeekDiv-container" style="display: none;">
+                <div id="newClonesPerWeekDivCanvasContainer" style="width: 80%;">
+                </div>
+                <div id="newClonesPerWeekDiv" ></div>
+            </div>
+            <div id="newForksPerWeekDiv-container" style="display: none;">
+                <div id="newForksPerWeekDivCanvasContainer" style="width: 80%;">
+                </div>
+                <div id="newForksPerWeekDiv" ></div>
+            </div>
+        </div>
+
+
+    </body>
+</html>

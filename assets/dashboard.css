@@ -1,0 +1,70 @@
+table {
+    border: 1px;
+    border-spacing: 0px;
+    border-color: rgb(235, 235, 235);
+}
+
+td {
+    padding: 5px;
+}
+
+th {
+    padding: 5px;
+    position: sticky;
+    top: 0;
+    background-color: #f7f7f7;
+}
+
+tfoot td {
+    padding: 5px;
+    background-color: #f7f7f7;
+    font-weight: bold;
+}
+
+.tab {
+    border: 1px solid #d4d4d4;
+    background-color: #d4d4d4;
+}
+
+.table-group {
+    border: 1px solid #94a3ff;
+    background-color: #94a3ff;
+}
+
+
+.odd-table-row {
+    background-color: #f7f7f7;
+}
+
+
+.row-error {
+    background-color: #ff6c6c;
+}
+
+.table-container {
+    background-color: #f7f7f7;
+    width: 900px;
+    border: 1px solid gray;
+    border-spacing: 10px;
+}
+
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
+}
+
+.amsify-suggestags-list {
+    width: 90% !important;
+}
+
+.ui-progressbar-value {
+    background: #3bb34f !important;
+}
+
+.title {
+    text-align: center;
+    font-size: 20px;
+}
