@@ -1,4 +1,4 @@
-const version = '0.0.1';
+const version = '0.0.2';
 
 let currentExecution = {executionTime:'', repoList:{}, pulls:{}, issues:{}, clones:{}, views:{}, forks:{}}
 let cancelSignal = false;
@@ -732,7 +732,7 @@ async function issuesCalculator(measureConfig, execution) {
         result.push({name:repoList[i].name, app_css_class: 'table-group'});
         const issues = execution.issues[repoList[i].name] ? execution.issues[repoList[i].name] : [];
         for (let x = 0; x < issues.length; x++) {
-            result.push({ milestone: issues[x].milestone ? issues[x].milestone.title : '', title: issues[x].title,
+            result.push({ milestone: issues[x].milestone ? issues[x].milestone.title : '', title: issues[x].title, number: extractIssueID(issues[x]),
             state: issues[x].state, labels: extractLabels(issues[x].labels), projects: issues[x].projects, body: issues[x].body});
         }
     }
@@ -746,6 +746,10 @@ function extractProjectPerIssue(data) {
         
     }
     return result.join('; ');
+}
+
+function extractIssueID(issue) {
+    return `<a href="${issue.html_url}" target="_blank">${issue.number}</a>`;
 }
 
 function extractLabels(labels) {
