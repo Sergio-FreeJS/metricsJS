@@ -1,4 +1,4 @@
-const version = '0.0.2';
+const version = '0.0.3';
 
 let currentExecution = {executionTime:'', repoList:{}, pulls:{}, issues:{}, clones:{}, views:{}, forks:{}}
 let cancelSignal = false;
@@ -732,12 +732,35 @@ async function issuesCalculator(measureConfig, execution) {
         result.push({name:repoList[i].name, app_css_class: 'table-group'});
         const issues = execution.issues[repoList[i].name] ? execution.issues[repoList[i].name] : [];
         for (let x = 0; x < issues.length; x++) {
-            result.push({ milestone: issues[x].milestone ? issues[x].milestone.title : '', title: issues[x].title, number: extractIssueID(issues[x]),
-            state: issues[x].state, labels: extractLabels(issues[x].labels), projects: issues[x].projects, body: issues[x].body});
+            const record = { milestone: issues[x].milestone ? issues[x].milestone.title : '', title: issues[x].title, number: extractIssueID(issues[x]),
+                             state: issues[x].state, labels: extractLabels(issues[x].labels), projects: issues[x].projects, body: issues[x].body};
+            parseIssueBody(measureConfig, record);
+            result.push(record);
         }
     }
     creatTable(measureConfig.targetHTMLElement, measureConfig.title, measureConfig, result)
 }
+
+function parseIssueBody(measureConfig, record) {
+    const tokens = record?.body?.split(measureConfig.columnStart);
+    tokens.forEach(element => {
+        let column = element?.split(measureConfig.columnEnd);
+        issuesCalculatorCheckColumn(measureConfig, record, column);
+    });
+}
+
+function issuesCalculatorCheckColumn(measureConfig, record, column) {
+    if (!column || column.length !== 2) {
+        return;
+    }
+
+    if (measureConfig.config.cols.indexOf(column[0]) < 0) {
+        measureConfig.config.cols.push(column[0]);
+        measureConfig.tableColumns.push({header: column[0], value: column[0]})
+    }
+    record[column[0]] = column[1];
+}
+
 
 function extractProjectPerIssue(data) {
     const result = [];
