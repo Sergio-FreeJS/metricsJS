@@ -1,4 +1,4 @@
-const version = '0.0.3';
+const version = '0.0.4';
 
 let currentExecution = {executionTime:'', repoList:{}, pulls:{}, issues:{}, clones:{}, views:{}, forks:{}}
 let cancelSignal = false;
