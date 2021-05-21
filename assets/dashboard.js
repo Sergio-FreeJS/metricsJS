@@ -742,6 +742,28 @@ async function issuesCalculator(measureConfig, execution) {
 }
 
 function parseIssueBody(measureConfig, record) {
+    if(measureConfig.columnSeparator && measureConfig.columnSeparator.length > 0) {
+        parseIssueBodyBySeparator(measureConfig, record);
+        return;
+    }
+
+    if(measureConfig.columnStart && measureConfig.columnStart.length > 0 && 
+       measureConfig.columnEnd && measureConfig.columnEnd.length > 0 ) {
+        parseIssueBodyByStartEnd(measureConfig, record);
+    }
+}
+
+function parseIssueBodyBySeparator(measureConfig, record) {
+    const tokens = record?.body?.split(measureConfig.columnSeparator);
+    const records = tokens.length > 1 ? Math.trunc(tokens.length / 2) : 0;
+    for (let i = 1; i < records; i = i + 2) {
+        const columnName = tokens[i] && tokens[i].endsWith(':') ? tokens[i].substring(0, tokens[i].length - 1) : tokens[i];
+        let column = [].concat(columnName).concat(tokens[i+1]);
+        issuesCalculatorCheckColumn(measureConfig, record, column);
+    }
+}
+
+function parseIssueBodyByStartEnd(measureConfig, record) {
     const tokens = record?.body?.split(measureConfig.columnStart);
     tokens.forEach(element => {
         let column = element?.split(measureConfig.columnEnd);
