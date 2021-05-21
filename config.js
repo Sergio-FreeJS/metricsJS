@@ -50,6 +50,7 @@ const repoConfig = {tableColumns:[
         targetHTMLTab: 'issuesStatusTab',
         targetHTMLElement: 'issuesDiv',
         calculator: 'issuesCalculator',
+        columnSeparator: "**",
         columnStart: '## **_',
         columnEnd: '_**',
         tableColumns:[ {header:'Name', value:'name'}, {header:'Milestone', value:'milestone'}, {header:'Projects', value:'projects'}, {header:'State', value:'state'}, {header:'Title', value:'title'}, {header:'#', value:'number'}, {header:'Labels', value:'labels'}, {header:'Content', value:'body'} ],
